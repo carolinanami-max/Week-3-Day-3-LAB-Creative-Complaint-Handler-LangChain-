@@ -1,10 +1,7 @@
 import os
 from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
-from langchain.agents import create_agent
 from langchain.tools import tool
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from typing import List, Dict
 import random
 
 # Load environment variables
@@ -14,58 +11,79 @@ load_dotenv()
 llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.7)
 
 @tool
-def consult_demogorgon(complaint: str) -> str:
-    """Get the Demogorgon's perspective on a complaint about the Upside Down."""
-    responses = [
-        f"The Demogorgon tilts its head. It seems confused by '{complaint}'. Perhaps the issue is that you're thinking in three dimensions?",
-        f"The Demogorgon makes a sound that might be agreement. It suggests that the problem might be temporal - things work differently in the Upside Down's time.",
-        f"The Demogorgon appears to be eating something. It doesn't seem to understand the concept of '{complaint}' - maybe consistency isn't a priority there?"
-    ]
-    return random.choice(responses)
-
-@tool
-def check_hawkins_records(query: str) -> str:
-    """Search Hawkins historical records for information."""
-    records = {
-        "portal": "Records show portals have opened on various dates with no clear pattern. Weather, electromagnetic activity, and unknown factors seem involved.",
-        "monsters": "Historical records indicate creatures from the Upside Down behave differently based on environmental factors, time of day, and proximity to certain individuals.",
-        "psychics": "Records show that psychic abilities vary greatly. Some individuals can move objects but not see the future, others can see visions but not move things.",
-        "electricity": "Hawkins has a history of electrical anomalies. Records suggest a connection between the Upside Down and electromagnetic fields."
+def consult_demogorgon(question: str) -> str:
+    """Ask about Demogorgon behavior, diet, habits, or biology."""
+    
+    responses = {
+        "diet": "Demogorgons are opportunistic predators. They primarily hunt living creatures but are also drawn to strong emotional energy. In the Upside Down, they seem to survive on whatever they can find - small creatures, lost travelers, and sometimes just the psychic energy of fear.",
+        "behavior": "Demogorgons are territorial but also curious. They're drawn to light, sound, and strong emotions. Their behavior is unpredictable because they're not just animals - they're connected to the Mind Flayer's hive mind.",
+        "weakness": "Demogorgons are vulnerable to fire, bright lights, and loud noises. They can be wounded by conventional weapons but heal quickly. The best defense is to avoid attracting their attention in the first place.",
+        "default": "Demogorgons are creatures from the Upside Down. They're humanoid in shape but with a face that opens like a flower to reveal rows of teeth. They have no eyes but seem to sense prey through some combination of sound, vibration, and psychic energy."
     }
-    for key, value in records.items():
-        if key in query.lower():
-            return value
-    return f"Records don't contain specific information about '{query}', but they note that many unexplained events have occurred in Hawkins over the years."
+    
+    for key, response in responses.items():
+        if key in question.lower():
+            return response
+    
+    return responses["default"]
 
 @tool
-def cast_interdimensional_spell(problem: str, creativity_level: str = "medium") -> str:
-    """Suggest a creative interdimensional spell to fix a problem."""
-    spells = [
-        f"Try chanting 'Beema Beema Beema' three times while holding a Walkman. This might recalibrate the interdimensional frequencies related to: {problem}",
-        f"Create a salt circle and place a compass in the center. The magnetic anomalies might help stabilize: {problem}",
-        f"Play 'Running Up That Hill' backwards at the exact location of the issue. The temporal resonance could fix: {problem}",
-        f"Gather three items: a lighter, a compass, and something personal. Arrange them in a triangle while thinking about: {problem}. The emotional connection might help."
-    ]
-    return random.choice(spells)
+def check_hawkins_records(question: str) -> str:
+    """Ask about Hawkins history, the lab, past events, or characters."""
+    
+    responses = {
+        "lab": "Hawkins National Laboratory is a Department of Energy facility that actually conducted secret experiments related to the Upside Down. Dr. Brenner ran experiments on children with psychic abilities, including Eleven. The lab had a massive gate to the Upside Down in its lower levels.",
+        "portal": "The first known portal to the Upside Down was opened by Eleven in 1983 when she made contact with the Demogorgon. Since then, portals have appeared sporadically, often triggered by high emotional energy or disturbances in the fabric between dimensions.",
+        "will": "Will Byers was the first known victim of the Demogorgon. He survived by hiding in the Upside Down for a week, communicating with his mother through Christmas lights. His experience left him with a connection to the Mind Flayer.",
+        "eleven": "Eleven (El) is a psychic with telekinetic and extrasensory powers. She was born with these abilities, which were amplified by Dr. Brenner's experiments. She opened the first gate and has closed it twice.",
+        "default": "Hawkins, Indiana has been the epicenter of Upside Down activity since 1983. Key locations include the Lab, the Byers house, the Starcourt Mall, and the Creel House. The town has survived multiple supernatural threats thanks to a group of kids and some brave adults."
+    }
+    
+    for key, response in responses.items():
+        if key in question.lower():
+            return response
+    
+    return responses["default"]
+
+@tool
+def cast_interdimensional_spell(question: str) -> str:
+    """Get creative solutions or spells for dealing with Upside Down problems."""
+    
+    spells = {
+        "portal": "To locate or close a portal: Take a compass, a walkie-talkie tuned to static, and a photograph of someone you love. At the exact spot where the compass goes haywire, bury the photograph while saying the person's name three times. The emotional connection should stabilize or seal the portal.",
+        "demogorgon": "To repel a Demogorgon: Create a circle of salt mixed with crushed eggshells. Light seven candles around it and play 'Should I Stay or Should I Go' at maximum volume. The combination of light, sound, and protective barriers confuses their senses.",
+        "mindflayer": "To protect against the Mind Flayer: Wear something made of iron (horseshoe, nails, etc.) and keep a flame nearby. The Mind Flayer avoids intense heat and is disrupted by iron - ancient folklore about fairies actually applies here.",
+        "default": "When dealing with the Upside Down, remember these rules: 1) Light protects you, 2) Emotional connections create pathways, 3) What happens in Hawkins doesn't stay in Hawkins, 4) Trust the kids - they've seen more than most adults."
+    }
+    
+    for key, response in spells.items():
+        if key in question.lower():
+            return response
+    
+    return spells["default"]
 
 @tool
 def gather_party_wisdom(question: str) -> str:
-    """Ask the D&D party (Mike, Dustin, Lucas, Will) for their collective wisdom."""
-    party_responses = {
-        "portal": "Mike: 'Portals are unpredictable, but they usually open near strong emotional events or electromagnetic disturbances.' Dustin: 'Also, they seem to follow some kind of pattern related to the Mind Flayer's activity.'",
-        "monsters": "Lucas: 'Demogorgons are territorial but also opportunistic.' Will: 'They can sense fear and strong emotions. Maybe that's why they act differently sometimes.'",
-        "psychics": "Mike: 'El's powers seem connected to her emotional state.' Dustin: 'And they're limited by her physical and mental energy. That's probably why she can't do everything.'",
-        "electricity": "Lucas: 'The Upside Down seems to interfere with electrical systems.' Dustin: 'But it also creates strange connections. It's like a feedback loop.'"
+    """Ask Mike, Dustin, Lucas, or Will for their advice and experiences."""
+    
+    party_advice = {
+        "demogorgon": "Dustin: 'Demogorgons are like sharks - if you act scared, they sense it. Stand your ground, make noise, and use light.' Mike: 'They can track you through emotions, so try to stay calm.'",
+        "portal": "Lucas: 'Portals are like wounds in reality. They can heal, but it takes time or someone with powers to close them.' Will: 'The Upside Down feels colder near portals. You can sense them if you pay attention.'",
+        "mindflayer": "Will: 'The Mind Flayer... it's like a shadow that wants in your head. Don't let it. Think of happy things, think of your friends.' Mike: 'Heat hurts it. Fire, steam, anything hot.'",
+        "vecna": "Dustin: 'Vecna uses your trauma against you. The more you dwell on your worst memories, the stronger he gets.' Lucas: 'Music helps. It breaks his hold somehow.'",
+        "default": "The party huddles to discuss your question. Dustin adjusts his hat: 'Look, we've faced a lot of weird stuff. The key is to stick together, trust your instincts, and remember that normal rules don't always apply.' Mike nods: 'And if you hear someone calling your name when you're alone - don't answer.'"
     }
-    for key, response in party_responses.items():
+    
+    for key, response in party_advice.items():
         if key in question.lower():
             return response
-    return "The party huddles together. Mike: 'This is a tough one.' Dustin: 'We need more information.' Lucas: 'Let's think about what we know.' Will: 'Maybe we should consult other sources?'"
+    
+    return party_advice["default"]
 
-# Create list of tools
+# List of tools for compatibility with your existing code
 tools = [consult_demogorgon, check_hawkins_records, cast_interdimensional_spell, gather_party_wisdom]
 
-# Tool Usage Tracker (from Step 5)
+# Tool Usage Tracker (keeping your existing code below)
 class ToolUsageTracker:
     def __init__(self):
         self.usage_count = {tool.name: 0 for tool in tools}
@@ -110,13 +128,13 @@ for i, complaint in enumerate(complaints, 1):
     if "demogorgon" in complaint.lower() or "eat" in complaint.lower():
         print("  ✓ Using consult_demogorgon")
         tracker.track_usage("consult_demogorgon")
-        result = consult_demogorgon.invoke({"complaint": complaint})
+        result = consult_demogorgon.invoke({"question": complaint})
         print(f"    → {result}")
     
     if "portal" in complaint.lower() or "schedule" in complaint.lower():
         print("  ✓ Using check_hawkins_records")
         tracker.track_usage("check_hawkins_records")
-        result = check_hawkins_records.invoke({"query": complaint})
+        result = check_hawkins_records.invoke({"question": complaint})
         print(f"    → {result}")
     
     if "psychics" in complaint.lower() or "see" in complaint.lower():
@@ -128,7 +146,7 @@ for i, complaint in enumerate(complaints, 1):
     if "creatures" in complaint.lower() or "power" in complaint.lower() or "electricity" in complaint.lower():
         print("  ✓ Using cast_interdimensional_spell")
         tracker.track_usage("cast_interdimensional_spell")
-        result = cast_interdimensional_spell.invoke({"problem": complaint})
+        result = cast_interdimensional_spell.invoke({"question": complaint})
         print(f"    → {result}")
     
     print()
